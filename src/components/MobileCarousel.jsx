@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, useMotionValue, useTransform, useMotionValueEvent, animate } from 'framer-motion';
 import ServiceCard from './ServiceCard';
 
-const MobileCarouselCard = ({ service, index, x, itemWidth, contentWidth, appState }) => {
+const MobileCarouselCard = ({ service, index, x, itemWidth, contentWidth, appState, onCardClick }) => {
   const initialX = index * itemWidth;
   
   const wrappedX = useTransform(x, (currentX) => {
@@ -20,13 +20,17 @@ const MobileCarouselCard = ({ service, index, x, itemWidth, contentWidth, appSta
      setIsPhysicallyCentered(Math.abs(latest) < itemWidth / 2);
   });
 
-  const isFocusPhase = appState === 'PAUSED' || appState === 'FOCUSED' || appState === 'UNFOCUSING';
-  const shouldFocus = isPhysicallyCentered && appState === 'FOCUSED';
-  const isAnotherFocused = !isPhysicallyCentered && appState === 'FOCUSED';
-  const shouldInvertCard = isPhysicallyCentered && appState === 'FOCUSED';
+  const isFocusPhase = appState === 'PAUSED' || appState === 'FOCUSED' || appState === 'MANUAL_FOCUSED' || appState === 'UNFOCUSING';
+  const shouldFocus = isPhysicallyCentered && (appState === 'FOCUSED' || appState === 'MANUAL_FOCUSED');
+  const isAnotherFocused = !isPhysicallyCentered && (appState === 'FOCUSED' || appState === 'MANUAL_FOCUSED');
+  const shouldInvertCard = isPhysicallyCentered && (appState === 'FOCUSED' || appState === 'MANUAL_FOCUSED');
 
   return (
     <motion.div
+      onTap={(e) => {
+        e.stopPropagation();
+        onCardClick(index);
+      }}
       style={{
         x: wrappedX,
         position: 'absolute',
@@ -62,6 +66,19 @@ const MobileCarousel = ({ services }) => {
   // Duplicate services to ensure we have enough width for infinite scrolling
   const renderServices = [...services, ...services, ...services];
   const contentWidth = renderServices.length * itemWidth;
+
+  const handleCardClick = (index) => {
+    // Snap to the clicked card and hold focus
+    const targetX = -index * itemWidth;
+    animate(x, targetX, {
+      ease: 'easeOut',
+      duration: 0.4,
+      onComplete: () => {
+        currentIndexRef.current = index;
+        setAppState('MANUAL_FOCUSED');
+      }
+    });
+  };
 
   useEffect(() => {
     if (appState === 'SCROLLING') {
@@ -115,6 +132,12 @@ const MobileCarousel = ({ services }) => {
     <motion.div 
       className="relative h-[550px] w-full max-w-full mx-auto mt-10 flex items-center justify-center overflow-hidden touch-pan-y"
       style={{ perspective: 1200 }}
+      onTap={() => {
+        // If clicking the background during a focus state, dismiss it
+        if (appState === 'MANUAL_FOCUSED' || appState === 'FOCUSED' || appState === 'PAUSED') {
+          setAppState('UNFOCUSING');
+        }
+      }}
       onPanStart={() => setAppState('DRAGGING')}
       onPan={(e, info) => {
         x.set(x.get() + info.delta.x);
@@ -141,6 +164,7 @@ const MobileCarousel = ({ services }) => {
           itemWidth={itemWidth}
           contentWidth={contentWidth}
           appState={appState}
+          onCardClick={handleCardClick}
         />
       ))}
     </motion.div>
