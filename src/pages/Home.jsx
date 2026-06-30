@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Calculator, FileText, PenTool, Globe, Printer, TrendingUp, ArrowRight } from 'lucide-react';
 import Button from '../components/Button';
 import ServiceCard from '../components/ServiceCard';
+import MobileCarousel from '../components/MobileCarousel';
 import bgImage from '../assets/quadrant-bg.jpeg';
 
 const Home = () => {
@@ -108,20 +109,8 @@ const Home = () => {
             </motion.p>
           </div>
 
-          <div className="md:hidden relative h-[650px] w-full max-w-[340px] mx-auto mt-10">
-             {services.map((service, index) => (
-               <ServiceCard 
-                 key={`mobile-${service.title}`}
-                 title={service.title}
-                 description={service.description}
-                 icon={service.icon}
-                 isMobileDeck={true}
-                 isActive={activeCard === service.title}
-                 onClick={() => setActiveCard(service.title)}
-                 index={index}
-                 totalCards={services.length}
-               />
-             ))}
+          <div className="md:hidden w-full overflow-visible">
+            <MobileCarousel services={services} />
           </div>
 
           <div className="hidden md:grid grid-cols-2 lg:grid-cols-3 gap-8 mt-12">

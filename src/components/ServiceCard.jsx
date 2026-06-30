@@ -8,6 +8,9 @@ const ServiceCard = ({
   delay = 0,
   isActive = false,
   isMobileDeck = false,
+  isCarouselCard = false,
+  isFocusedCarouselCard = false,
+  isMobileBack = false,
   onClick,
   index = 0,
   totalCards = 1
@@ -34,50 +37,71 @@ const ServiceCard = ({
       className={`
         group/card relative rounded-2xl overflow-hidden cursor-pointer flex flex-col p-[4px]
         border transition-all duration-400 ease-in-out transform-gpu
-        ${isMobileDeck ? 'absolute left-0 right-0 h-[480px]' : 'h-[500px] w-full'}
+        ${isMobileDeck ? 'absolute left-0 right-0 h-[480px]' : (isCarouselCard ? 'w-full h-full' : 'h-[500px] w-full')}
         
         /* Mobile Active State */
-        ${isMobileDeck && isActive ? 'border-gray-500 shadow-2xl bg-[#333333]' : 'border-gray-200 dark:border-white/10 bg-white dark:bg-dark-800 shadow-md'}
+        ${(isMobileDeck && isActive) ? 'border-gray-500 shadow-2xl bg-[#333333]' : 'border-gray-200 dark:border-white/10 bg-white dark:bg-dark-800 shadow-md'}
         
-        /* Desktop Hover State & Surrounding Dim/Blur */
-        ${!isMobileDeck ? 'md:group-hover/container:opacity-50 md:group-hover/container:blur-[2px] md:hover:!opacity-100 md:hover:!blur-none md:hover:scale-105 md:hover:shadow-[0_30px_60px_rgba(0,0,0,0.4)] md:hover:border-transparent' : ''}
+        /* Desktop Hover State & Surrounding Dim/Blur (disabled on carousel card) */
+        ${(!isMobileDeck && !isCarouselCard) ? 'md:group-hover/container:opacity-50 md:group-hover/container:blur-[2px] md:hover:!opacity-100 md:hover:!blur-none md:hover:scale-105 md:hover:shadow-[0_30px_60px_rgba(0,0,0,0.4)] md:hover:border-transparent' : ''}
       `}
     >
       {/* Rotating Gradient Background Div */}
-      <div 
-        className="absolute w-[200%] h-[200%] -top-[50%] -left-[50%] opacity-0 md:group-hover/card:opacity-100 animate-spin z-0 pointer-events-none transition-opacity duration-300"
-        style={{
-          background: 'conic-gradient(from 0deg, transparent 0deg, transparent 270deg, #16a34a 315deg, #eab308 360deg)',
-          animationDuration: '3s'
-        }}
-      />
+      {!isMobileBack && (
+        <div 
+          className={`absolute w-[200%] h-[200%] -top-[50%] -left-[50%] animate-spin z-0 pointer-events-none transition-opacity duration-300 ${isFocusedCarouselCard ? 'opacity-100' : 'opacity-0 md:group-hover/card:opacity-100'}`}
+          style={{
+            background: 'conic-gradient(from 0deg, transparent 0deg, transparent 270deg, #16a34a 315deg, #eab308 360deg)',
+            animationDuration: '3s'
+          }}
+        />
+      )}
       
-      <div className="relative z-10 w-full h-full rounded-[12px] overflow-hidden flex flex-col bg-white dark:bg-dark-800 md:group-hover/card:bg-white transition-colors duration-400">
-        {/* Image / Placeholder Area */}
-        <div className="h-[200px] w-full relative overflow-hidden bg-gray-100 dark:bg-dark-700 shrink-0 transition-colors duration-400">
-          <div className="w-full h-full flex flex-col items-center justify-center p-6 text-center relative transition-colors duration-400 md:group-hover/card:bg-gray-100 bg-gray-100 dark:bg-dark-700">
-          <ImageIcon className="w-10 h-10 mb-3 text-gray-400 dark:text-gray-500 md:group-hover/card:text-yellow-500 transition-colors duration-400 z-10" strokeWidth={1.5} />
-            <p className="text-sm font-semibold text-gray-600 dark:text-gray-300 md:group-hover/card:text-gray-900 transition-colors duration-400 z-10 tracking-wide uppercase">
-              Visual coming soon
+      <div className={`relative z-10 w-full h-full rounded-[12px] overflow-hidden flex flex-col transition-colors duration-400 ${isFocusedCarouselCard ? 'bg-white' : 'bg-white dark:bg-dark-800 md:group-hover/card:bg-white'}`}>
+        {isMobileBack ? (
+          <div className="flex flex-col items-center justify-center h-full p-8 text-center bg-dark-700">
+            <div className="w-16 h-16 rounded-full bg-primary-500/10 flex items-center justify-center mb-6">
+              <Icon className="w-8 h-8 text-primary-500" />
+            </div>
+            <h3 className="text-2xl font-bold mb-4 text-white">
+              {title}
+            </h3>
+            <p className="text-gray-300 leading-relaxed text-sm mb-8">
+              {description}
             </p>
-            <p className="text-xs text-gray-500 dark:text-gray-400 md:group-hover/card:text-gray-600 mt-2 z-10 max-w-[220px] leading-relaxed transition-colors duration-400">
-            Illustration unavailable. Please explore the details below.
-          </p>
-        </div>
-      </div>
-
-        {/* Content Area */}
-        <div className="p-6 md:p-8 flex-grow flex flex-col justify-center bg-transparent transition-colors duration-400">
-          <div className="w-12 h-12 rounded-xl bg-gray-100 dark:bg-dark-700 flex items-center justify-center mb-5 border border-gray-200 dark:border-white/5 transition-all duration-300 md:group-hover/card:bg-gray-100 md:group-hover/card:border-gray-200">
-            <Icon className="w-6 h-6 text-primary-500 transition-colors md:group-hover/card:text-primary-600" />
+            <button className="px-6 py-3 bg-primary-600 hover:bg-primary-500 text-white font-medium rounded-lg transition-colors w-full uppercase tracking-wider text-sm shadow-lg shadow-primary-500/20">
+              Learn More
+            </button>
           </div>
-                <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white transition-colors duration-400 md:group-hover/card:text-gray-900">
-            {title}
-          </h3>
-          <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm transition-colors duration-400 md:group-hover/card:text-gray-600">
-            {description}
-          </p>
-        </div>
+        ) : (
+          <>
+            {/* Image / Placeholder Area */}
+            <div className={`h-[200px] w-full relative overflow-hidden shrink-0 transition-colors duration-400 ${isFocusedCarouselCard ? 'bg-gray-100' : 'bg-gray-100 dark:bg-dark-700'}`}>
+              <div className={`w-full h-full flex flex-col items-center justify-center p-6 text-center relative transition-colors duration-400 ${isFocusedCarouselCard ? 'bg-gray-100' : 'bg-gray-100 dark:bg-dark-700 md:group-hover/card:bg-gray-100'}`}>
+              <ImageIcon className={`w-10 h-10 mb-3 transition-colors duration-400 z-10 ${isFocusedCarouselCard ? 'text-yellow-500' : 'text-gray-400 dark:text-gray-500 md:group-hover/card:text-yellow-500'}`} strokeWidth={1.5} />
+                <p className={`text-sm font-semibold transition-colors duration-400 z-10 tracking-wide uppercase ${isFocusedCarouselCard ? 'text-gray-900' : 'text-gray-600 dark:text-gray-300 md:group-hover/card:text-gray-900'}`}>
+                  Visual coming soon
+                </p>
+                <p className={`text-xs mt-2 z-10 max-w-[220px] leading-relaxed transition-colors duration-400 ${isFocusedCarouselCard ? 'text-gray-600' : 'text-gray-500 dark:text-gray-400 md:group-hover/card:text-gray-600'}`}>
+                Illustration unavailable. Please explore the details below.
+              </p>
+            </div>
+          </div>
+    
+          {/* Content Area */}
+          <div className="p-6 md:p-8 flex-grow flex flex-col justify-center bg-transparent transition-colors duration-400">
+            <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-5 border transition-all duration-300 ${isFocusedCarouselCard ? 'bg-gray-100 border-gray-200' : 'bg-gray-100 dark:bg-dark-700 border-gray-200 dark:border-white/5 md:group-hover/card:bg-gray-100 md:group-hover/card:border-gray-200'}`}>
+              <Icon className={`w-6 h-6 transition-colors ${isFocusedCarouselCard ? 'text-primary-600' : 'text-primary-500 md:group-hover/card:text-primary-600'}`} />
+            </div>
+                  <h3 className={`text-xl font-bold mb-3 transition-colors duration-400 ${isFocusedCarouselCard ? 'text-gray-900' : 'text-gray-900 dark:text-white md:group-hover/card:text-gray-900'}`}>
+              {title}
+            </h3>
+            <p className={`leading-relaxed text-sm transition-colors duration-400 ${isFocusedCarouselCard ? 'text-gray-600' : 'text-gray-600 dark:text-gray-400 md:group-hover/card:text-gray-600'}`}>
+              {description}
+            </p>
+          </div>
+          </>
+        )}
       </div>
     </motion.div>
   );
