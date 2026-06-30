@@ -1,9 +1,12 @@
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Calculator, FileText, PenTool, Globe, Printer, TrendingUp, ArrowRight } from 'lucide-react';
 import Button from '../components/Button';
 import ServiceCard from '../components/ServiceCard';
+import bgImage from '../assets/quadrant-bg.jpeg';
 
 const Home = () => {
+  const [activeCard, setActiveCard] = useState("Accounting");
   const services = [
     {
       title: "Accounting",
@@ -40,10 +43,16 @@ const Home = () => {
   return (
     <div className="pt-20">
       {/* Hero Section */}
-      <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
-        {/* Background decorative elements */}
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary-500/20 rounded-full mix-blend-screen filter blur-[100px] animate-pulse" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-secondary-500/20 rounded-full mix-blend-screen filter blur-[100px] animate-pulse" style={{ animationDelay: '2s' }} />
+      <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden bg-dark-900 transition-colors duration-300">
+        <div className="absolute inset-0 z-0">
+          <img 
+            src={bgImage} 
+            alt="Hero Background" 
+            className="w-full h-full object-cover object-center"
+          />
+          {/* Solid overlay without gradients for contrast */}
+          <div className="absolute inset-0 bg-white/20 dark:bg-black/65 backdrop-blur-[2px] transition-colors duration-300" />
+        </div>
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
           <motion.div
@@ -51,16 +60,16 @@ const Home = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <span className="inline-block py-1 px-3 rounded-full bg-white/5 border border-white/10 text-primary-400 text-sm font-semibold tracking-wider mb-6 backdrop-blur-sm">
+            <span className="inline-block py-1 px-3 rounded-full bg-white/50 dark:bg-white/10 border border-gray-300 dark:border-white/20 text-primary-600 dark:text-primary-400 text-sm font-bold tracking-wider mb-6 backdrop-blur-sm shadow-sm transition-colors duration-300">
               PREMIUM BUSINESS SOLUTIONS
             </span>
-            <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-8">
+            <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-8 text-primary-600 dark:text-white transition-colors duration-300">
               Your Complete <br className="hidden md:block" />
-              <span className="bg-clip-text bg-gradient-to-r from-primary-400 via-secondary-400 to-primary-400 animate-gradient-x">
+              <span className="text-gray-500 dark:text-primary-500">
                 Digital & Business
               </span> Partner
             </h1>
-            <p className="mt-4 text-xl md:text-2xl text-gray-400 max-w-3xl mx-auto mb-10 leading-relaxed">
+            <p className="mt-4 text-xl md:text-2xl text-primary-600 dark:text-gray-300 max-w-3xl mx-auto mb-10 leading-relaxed transition-colors duration-300">
               We empower professionals and businesses with top-tier services ranging from accounting to digital presence. Elevate your brand today.
             </p>
             <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-6">
@@ -76,33 +85,49 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Services Section */}
-      <section id="services" className="py-24 relative">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
+      {/* Quadrant Solution Section */}
+      <section id="services" className="py-32 relative overflow-hidden bg-dark-800 transition-colors duration-300 group/container">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="text-center mb-20">
             <motion.h2 
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="text-3xl md:text-5xl font-bold mb-4"
+              className="text-4xl md:text-5xl font-extrabold mb-6 tracking-tight text-gray-500 dark:text-white transition-colors duration-300"
             >
-              Our <span className="text-primary-400">Services</span>
+              The <span className="text-primary-500">Quadrant</span> Solution
             </motion.h2>
             <motion.p 
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.1 }}
-              className="text-gray-400 text-lg max-w-2xl mx-auto"
+              className="text-gray-600 dark:text-gray-400 text-lg max-w-2xl mx-auto transition-colors duration-300"
             >
               Comprehensive solutions designed to help your business thrive in the modern landscape.
             </motion.p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="md:hidden relative h-[650px] w-full max-w-[340px] mx-auto mt-10">
+             {services.map((service, index) => (
+               <ServiceCard 
+                 key={`mobile-${service.title}`}
+                 title={service.title}
+                 description={service.description}
+                 icon={service.icon}
+                 isMobileDeck={true}
+                 isActive={activeCard === service.title}
+                 onClick={() => setActiveCard(service.title)}
+                 index={index}
+                 totalCards={services.length}
+               />
+             ))}
+          </div>
+
+          <div className="hidden md:grid grid-cols-2 lg:grid-cols-3 gap-8 mt-12">
             {services.map((service, index) => (
               <ServiceCard 
-                key={service.title}
+                key={`desktop-${service.title}`}
                 title={service.title}
                 description={service.description}
                 icon={service.icon}
@@ -114,18 +139,17 @@ const Home = () => {
       </section>
 
       {/* Main CTA Section */}
-      <section className="py-24 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-dark-900 via-primary-900/20 to-dark-900" />
+      <section className="py-24 relative overflow-hidden bg-dark-900 transition-colors duration-300">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <motion.div 
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            className="glass p-12 md:p-16 rounded-3xl text-center border-primary-500/20"
+            className="bg-white dark:bg-dark-800 p-12 md:p-16 rounded-3xl text-center border border-gray-200 dark:border-white/10 shadow-xl transition-colors duration-300"
           >
-            <h2 className="text-4xl md:text-5xl font-bold mb-6">Ready to Transform Your Business?</h2>
-            <p className="text-xl text-gray-400 mb-10 max-w-2xl mx-auto">
-              Join hundreds of successful professionals who trust LifeandStyle for their business and digital needs.
+            <h2 className="text-4xl md:text-5xl font-bold mb-6 text-gray-900 dark:text-white transition-colors duration-300">Ready to Transform Your Business?</h2>
+            <p className="text-xl text-gray-600 dark:text-gray-400 mb-10 max-w-2xl mx-auto transition-colors duration-300">
+              Join hundreds of successful professionals who trust Quadrant Solutions for their business and digital needs.
             </p>
             <Button to="/contact" variant="primary" size="lg" className="text-lg px-12 py-5 group shadow-primary-500/50">
               Contact Us Now

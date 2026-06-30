@@ -1,30 +1,84 @@
 import { motion } from 'framer-motion';
+import { Image as ImageIcon } from 'lucide-react';
 
-const ServiceCard = ({ title, description, icon: Icon, delay = 0 }) => {
+const ServiceCard = ({ 
+  title, 
+  description, 
+  icon: Icon, 
+  delay = 0,
+  isActive = false,
+  isMobileDeck = false,
+  onClick,
+  index = 0,
+  totalCards = 1
+}) => {
+  // Mobile stacked deck animation props using 3D perspective
+  const mobileAnimate = isMobileDeck ? {
+    top: isActive ? 0 : index * 25 + 20,
+    scale: isActive ? 1.05 : 1 - (totalCards - index) * 0.02,
+    zIndex: isActive ? 50 : index,
+    opacity: isActive ? 1 : 0.8,
+    rotateX: isActive ? 0 : 5, // subtle 3D tilt when stacked
+  } : {};
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-50px" }}
-      transition={{ duration: 0.5, delay }}
-      className="glass-card p-6 group cursor-pointer relative"
-    >
-      {/* Hover glow effect background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-primary-500/0 to-secondary-500/0 group-hover:from-primary-500/10 group-hover:to-secondary-500/10 transition-all duration-500 rounded-2xl" />
-      
-      <div className="relative z-10">
-        <div className="w-14 h-14 rounded-xl bg-dark-700/50 flex items-center justify-center mb-6 border border-white/5 group-hover:border-primary-500/30 group-hover:shadow-lg group-hover:shadow-primary-500/20 transition-all duration-300">
-          <Icon className="w-7 h-7 text-gray-300 group-hover:text-primary-400 transition-colors" />
-        </div>
+      layout={isMobileDeck}
+      initial={isMobileDeck ? false : { opacity: 0, y: 20 }}
+      whileInView={isMobileDeck ? undefined : { opacity: 1, y: 0 }}
+      viewport={isMobileDeck ? undefined : { once: true, margin: "-50px" }}
+      animate={isMobileDeck ? mobileAnimate : undefined}
+      transition={{ duration: 0.4, ...(isMobileDeck ? { type: "spring", stiffness: 300, damping: 25 } : { delay }) }}
+      onClick={onClick}
+      style={{ perspective: 1000 }}
+      className={`
+        group/card relative rounded-2xl overflow-hidden cursor-pointer flex flex-col p-[4px]
+        border transition-all duration-400 ease-in-out transform-gpu
+        ${isMobileDeck ? 'absolute left-0 right-0 h-[480px]' : 'h-[500px] w-full'}
         
-        <h3 className="text-xl font-bold mb-3 text-white group-hover:text-glow transition-all">{title}</h3>
-        <p className="text-gray-400 leading-relaxed text-sm group-hover:text-gray-300 transition-colors">
-          {description}
-        </p>
-      </div>
+        /* Mobile Active State */
+        ${isMobileDeck && isActive ? 'border-gray-500 shadow-2xl bg-[#333333]' : 'border-gray-200 dark:border-white/10 bg-white dark:bg-dark-800 shadow-md'}
+        
+        /* Desktop Hover State & Surrounding Dim/Blur */
+        ${!isMobileDeck ? 'md:group-hover/container:opacity-50 md:group-hover/container:blur-[2px] md:hover:!opacity-100 md:hover:!blur-none md:hover:scale-105 md:hover:shadow-[0_30px_60px_rgba(0,0,0,0.4)] md:hover:border-transparent' : ''}
+      `}
+    >
+      {/* Rotating Gradient Background Div */}
+      <div 
+        className="absolute w-[200%] h-[200%] -top-[50%] -left-[50%] opacity-0 md:group-hover/card:opacity-100 animate-spin z-0 pointer-events-none transition-opacity duration-300"
+        style={{
+          background: 'conic-gradient(from 0deg, transparent 0deg, transparent 270deg, #16a34a 315deg, #eab308 360deg)',
+          animationDuration: '3s'
+        }}
+      />
       
-      {/* Decorative line */}
-      <div className="absolute bottom-0 left-0 h-1 w-0 bg-gradient-to-r from-primary-500 to-secondary-500 group-hover:w-full transition-all duration-500" />
+      <div className="relative z-10 w-full h-full rounded-[12px] overflow-hidden flex flex-col bg-white dark:bg-dark-800 md:group-hover/card:bg-white transition-colors duration-400">
+        {/* Image / Placeholder Area */}
+        <div className="h-[200px] w-full relative overflow-hidden bg-gray-100 dark:bg-dark-700 shrink-0 transition-colors duration-400">
+          <div className="w-full h-full flex flex-col items-center justify-center p-6 text-center relative transition-colors duration-400 md:group-hover/card:bg-gray-100 bg-gray-100 dark:bg-dark-700">
+          <ImageIcon className="w-10 h-10 mb-3 text-gray-400 dark:text-gray-500 md:group-hover/card:text-yellow-500 transition-colors duration-400 z-10" strokeWidth={1.5} />
+            <p className="text-sm font-semibold text-gray-600 dark:text-gray-300 md:group-hover/card:text-gray-900 transition-colors duration-400 z-10 tracking-wide uppercase">
+              Visual coming soon
+            </p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 md:group-hover/card:text-gray-600 mt-2 z-10 max-w-[220px] leading-relaxed transition-colors duration-400">
+            Illustration unavailable. Please explore the details below.
+          </p>
+        </div>
+      </div>
+
+        {/* Content Area */}
+        <div className="p-6 md:p-8 flex-grow flex flex-col justify-center bg-transparent transition-colors duration-400">
+          <div className="w-12 h-12 rounded-xl bg-gray-100 dark:bg-dark-700 flex items-center justify-center mb-5 border border-gray-200 dark:border-white/5 transition-all duration-300 md:group-hover/card:bg-gray-100 md:group-hover/card:border-gray-200">
+            <Icon className="w-6 h-6 text-primary-500 transition-colors md:group-hover/card:text-primary-600" />
+          </div>
+                <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white transition-colors duration-400 md:group-hover/card:text-gray-900">
+            {title}
+          </h3>
+          <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm transition-colors duration-400 md:group-hover/card:text-gray-600">
+            {description}
+          </p>
+        </div>
+      </div>
     </motion.div>
   );
 };

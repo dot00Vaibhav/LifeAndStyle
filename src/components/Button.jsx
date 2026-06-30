@@ -18,9 +18,9 @@ const Button = ({
   const baseStyles = "inline-flex items-center justify-center font-semibold rounded-lg transition-all duration-300";
   
   const variants = {
-    primary: "bg-gradient-to-r from-primary-600 to-secondary-600 hover:from-primary-500 hover:to-secondary-500 text-white shadow-lg shadow-primary-500/30 hover:shadow-primary-500/50 hover:-translate-y-1",
-    outline: "border-2 border-primary-500 text-primary-400 hover:bg-primary-500/10 hover:shadow-lg hover:shadow-primary-500/20 hover:-translate-y-1",
-    ghost: "text-gray-300 hover:text-white hover:bg-white/5",
+    primary: "bg-primary-500 hover:bg-primary-600 text-white shadow-md hover:shadow-lg hover:-translate-y-1 transition-all",
+    outline: "border-2 border-primary-500 text-primary-500 hover:bg-primary-500 hover:text-white shadow-sm hover:shadow-md hover:-translate-y-1 transition-all",
+    ghost: "text-gray-600 dark:text-gray-300 hover:text-dark-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10",
   };
 
   const sizes = {
